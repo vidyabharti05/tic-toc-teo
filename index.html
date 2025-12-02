@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe Game</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, sans-serif;
+        color: white;
+    }
+
+    .container {
+        text-align: center;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .cell {
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 40px;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: 0.3s;
+    }
+
+    .cell:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+
+    .message {
+        margin-top: 20px;
+        font-size: 22px;
+    }
+
+    button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #00c6ff;
+    }
+
+    button:hover {
+        background: #009ac7;
+    }
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Tic Tac Toe</h1>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+    <button onclick="resetGame()">Restart Game</button>
+</div>
+
+<script>
+let board = [" "," "," "," "," "," "," "," "," "];
+let turn = "X";
+let gameOver = false;
+
+const winLines = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+];
+
+function renderBoard() {
+    const boardDiv = document.getElementById("board");
+    boardDiv.innerHTML = "";
+
+    board.forEach((value, index) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.innerText = value;
+        cell.onclick = () => makeMove(index);
+        boardDiv.appendChild(cell);
+    });
+}
+
+function makeMove(index) {
+    if (board[index] !== " " || gameOver) return;
+
+    board[index] = turn;
+    renderBoard();
+    checkWin();
+    turn = turn === "X" ? "O" : "X";
+    showMessage(`👉 ${turn}'s turn`);
+}
+
+function checkWin() {
+    for (let line of winLines) {
+        const [a, b, c] = line;
+        if (board[a] !== " " && board[a] === board[b] && board[a] === board[c]) {
+            confetti();
+            showMessage(`🏆 ${board[a]} has won!`);
+            gameOver = true;
+            return;
+        }
+    }
+
+    if (!board.includes(" ")) {
+        showMessage("🤝 It's a draw!");
+        gameOver = true;
+    }
+}
+
+function showMessage(msg) {
+    document.getElementById("message").innerText = msg;
+}
+
+function resetGame() {
+    board = [" "," "," "," "," "," "," "," "," "];
+    turn = "X";
+    gameOver = false;
+    renderBoard();
+    showMessage("👉 X's turn");
+}
+
+renderBoard();
+showMessage("👉 X's turn");
+</script>
+</body>
+</html>
